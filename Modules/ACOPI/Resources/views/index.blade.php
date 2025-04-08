@@ -1,4 +1,4 @@
-@extends('acopi::layouts.master')
+@extends('acopi::layouts.masterusers')
 
 @section('content')
     <h1>Hello World</h1>

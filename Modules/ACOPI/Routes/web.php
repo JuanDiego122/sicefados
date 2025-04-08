@@ -11,6 +11,10 @@
 |
 */
 
-Route::prefix('acopi')->group(function() {
-    Route::get('/', 'ACOPIController@index');
+Route::middleware(['lang'])->group(function(){
+    Route::prefix('acopi')->group(function() {
+        Route::get('/index', 'ACOPIController@index')->name('cefa.acopi.index');
+        Route::get('/admin/welcome', 'ACOPIController@admin')->name('acopi.admin.welcome');
+
+    });
 });

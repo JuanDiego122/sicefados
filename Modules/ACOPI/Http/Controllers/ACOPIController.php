@@ -16,6 +16,15 @@ class ACOPIController extends Controller
     {
         return view('acopi::index');
     }
+    public function welcome()
+    {
+        return view('acopi::welcome');
+    }
+    public function admin()
+    {
+        return view('acopi::welcome');
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -23,7 +32,7 @@ class ACOPIController extends Controller
      */
     public function create()
     {
-        return view('acopi::create');
+        return view('acopi::welcome');
     }
 
     /**
@@ -43,37 +52,7 @@ class ACOPIController extends Controller
      */
     public function show($id)
     {
-        return view('acopi::show');
+        return view('acopi::welcome');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('acopi::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

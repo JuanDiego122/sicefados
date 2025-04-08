@@ -4,6 +4,7 @@ namespace Modules\ACOPI\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ACOPIDatabaseSeeder extends Seeder
 {
@@ -16,6 +17,13 @@ class ACOPIDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // $this->call("OthersTableSeeder");
+        $this->call(AppTableSeeder::class); 
+        $this->call(PeopleTableSeeder::class); 
+        $this->call(UsersTableSeeder::class); 
+        $this->call(RolesTableSeeder::class); 
+        $this->call(PermissionsTableSeeder::class); 
+
+
+        DB::commit();
     }
 }
