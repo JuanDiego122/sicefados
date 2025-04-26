@@ -1,6 +1,6 @@
 <!-- ======= Header ======= -->
 <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
-<header id="header" class="fixed-top"style="background-color: rgb(249, 89, 40, 0.7); ">
+<header id="header" class="fixed-top" style="background-color: rgb(34, 139, 34); ">
   <div class="container d-flex align-items-center">
 
     <h1 class="logo me-auto"><a href="{{ route('cefa.welcome') }}">SICEFA</a></h1>
