@@ -1,0 +1,1019 @@
+From aa3be1bfbda2578a60b279c4124f0b5cf1db9aaa Mon Sep 17 00:00:00 2001
+From: JuanDiego122 <juandiegolemusff@gmail.com>
+Date: Tue, 8 Apr 2025 11:30:09 -0500
+Subject: [PATCH 1/2] actualizacion comic
+
+---
+ .../Database/Seeders/ACOPIDatabaseSeeder.php  |  10 +-
+ .../ACOPI/Database/Seeders/AppTableSeeder.php |  29 +
+ .../Database/Seeders/PeopleTableSeeder.php    |  30 +
+ .../Seeders/PermissionsTableSeeder.php        |  43 ++
+ .../Database/Seeders/RolesTableSeeder.php     |  27 +
+ .../Database/Seeders/UsersTableSeeder.php     |  20 +
+ .../Http/Controllers/ACOPIController.php      |  45 +-
+ Modules/ACOPI/Resources/views/index.blade.php |   2 +-
+ .../Resources/views/layouts/master.blade.php  | 563 +++++++++++++++++-
+ .../views/layouts/masterusers.blade.php       |  87 +++
+ .../ACOPI/Resources/views/welcome.blade.php   |   9 +
+ Modules/ACOPI/Routes/web.php                  |  10 +-
+ 12 files changed, 821 insertions(+), 54 deletions(-)
+ create mode 100644 Modules/ACOPI/Database/Seeders/AppTableSeeder.php
+ create mode 100644 Modules/ACOPI/Database/Seeders/PeopleTableSeeder.php
+ create mode 100644 Modules/ACOPI/Database/Seeders/PermissionsTableSeeder.php
+ create mode 100644 Modules/ACOPI/Database/Seeders/RolesTableSeeder.php
+ create mode 100644 Modules/ACOPI/Database/Seeders/UsersTableSeeder.php
+ create mode 100644 Modules/ACOPI/Resources/views/layouts/masterusers.blade.php
+ create mode 100644 Modules/ACOPI/Resources/views/welcome.blade.php
+
+diff --git a/Modules/ACOPI/Database/Seeders/ACOPIDatabaseSeeder.php b/Modules/ACOPI/Database/Seeders/ACOPIDatabaseSeeder.php
+index f9395887..069c496b 100644
+--- a/Modules/ACOPI/Database/Seeders/ACOPIDatabaseSeeder.php
++++ b/Modules/ACOPI/Database/Seeders/ACOPIDatabaseSeeder.php
+@@ -4,6 +4,7 @@ namespace Modules\ACOPI\Database\Seeders;
+ 
+ use Illuminate\Database\Seeder;
+ use Illuminate\Database\Eloquent\Model;
++use Illuminate\Support\Facades\DB;
+ 
+ class ACOPIDatabaseSeeder extends Seeder
+ {
+@@ -16,6 +17,13 @@ class ACOPIDatabaseSeeder extends Seeder
+     {
+         Model::unguard();
+ 
+-        // $this->call("OthersTableSeeder");
++        $this->call(AppTableSeeder::class); 
++        $this->call(PeopleTableSeeder::class); 
++        $this->call(UsersTableSeeder::class); 
++        $this->call(RolesTableSeeder::class); 
++        $this->call(PermissionsTableSeeder::class); 
++
++
++        DB::commit();
+     }
+ }
+diff --git a/Modules/ACOPI/Database/Seeders/AppTableSeeder.php b/Modules/ACOPI/Database/Seeders/AppTableSeeder.php
+new file mode 100644
+index 00000000..90583945
+--- /dev/null
++++ b/Modules/ACOPI/Database/Seeders/AppTableSeeder.php
+@@ -0,0 +1,29 @@
++<?php
++
++namespace Modules\ACOPI\Database\Seeders;
++
++use Illuminate\Database\Seeder;
++use Illuminate\Database\Eloquent\Model;
++use Modules\SICA\Entities\App;
++
++
++class AppTableSeeder extends Seeder
++{
++    /**
++     * Run the database seeds.
++     *
++     * @return void
++     */
++    public function run()
++    {
++    
++        $app = App::updateOrCreate(['name' => 'ACOPI'], [
++            'url' => '/acopi/index',
++            'color' => '#76250C',
++            'icon' => 'fas fa-mug-hot',
++            'description' => 'Registro de ventas en Estación de Café del CEFA',
++            'description_english' => 'Sales record at CEFA Coffee Station'
++        ]);
++
++    }
++}
+diff --git a/Modules/ACOPI/Database/Seeders/PeopleTableSeeder.php b/Modules/ACOPI/Database/Seeders/PeopleTableSeeder.php
+new file mode 100644
+index 00000000..d52e466f
+--- /dev/null
++++ b/Modules/ACOPI/Database/Seeders/PeopleTableSeeder.php
+@@ -0,0 +1,30 @@
++<?php
++
++namespace Modules\ACOPI\Database\Seeders;
++
++use Illuminate\Database\Seeder;
++use Illuminate\Database\Eloquent\Model;
++use Modules\SICA\Entities\EPS;
++use Modules\SICA\Entities\PensionEntity;
++use Modules\SICA\Entities\Person;
++use Modules\SICA\Entities\PopulationGroup;
++
++class PeopleTableSeeder extends Seeder
++{
++    public function run()
++    {
++        $population_group = PopulationGroup::firstOrCreate(['name' => 'NINGUNA']);
++        $eps = EPS::firstOrCreate(['name' => 'NO REGISTRA']);
++        $pension_entity = PensionEntity::firstOrCreate(['name' => 'NO REGISTRA']);
++
++        Person::firstOrCreate(['document_number' => 1029880898], [
++            'document_type' => 'Cédula de ciudadanía',
++            'first_name' => 'JUAN DIEGO',
++            'first_last_name' => 'LEMUS',
++            'second_last_name' => 'QUIMBAYA',
++            'eps_id' => $eps->id,
++            'population_group_id' => $population_group->id,
++            'pension_entity_id' => $pension_entity->id
++        ]);
++    }
++}
+diff --git a/Modules/ACOPI/Database/Seeders/PermissionsTableSeeder.php b/Modules/ACOPI/Database/Seeders/PermissionsTableSeeder.php
+new file mode 100644
+index 00000000..aa024f5e
+--- /dev/null
++++ b/Modules/ACOPI/Database/Seeders/PermissionsTableSeeder.php
+@@ -0,0 +1,43 @@
++<?php
++
++namespace Modules\ACOPI\Database\Seeders;
++
++use Illuminate\Database\Seeder;
++use Modules\SICA\Entities\App;
++use Modules\SICA\Entities\Permission;
++use Modules\SICA\Entities\Role;
++
++class PermissionsTableSeeder extends Seeder
++{
++    /**
++     * Run the database seeds.
++     *
++     * @return void
++     */
++    public function run()
++    {
++        // Crear una lista de permisos para el rol 
++        $permissions_admin = []; // Lista de permisos para el rol de administrador
++        
++        // Consultar aplicación SICA para registrar los roles
++        $app = App::where('name', 'ACOPI')->first();
++
++
++        // Vista de configuración (Administrador)
++        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.welcome'], [ // Registro o actualización de permiso
++            'name' => 'Acceso al Rol de Administrador',
++            'description' => 'Acceso al Rol de Administrador',
++            'description_english' => 'Access to the Administrator Role',
++            'app_id' => $app->id
++        ]);
++        $permissions_admin[] = $permission->id; // Almacenar permiso para rol
++
++
++
++        // Consulta de ROLES
++        $rol_admin = Role::where('slug', 'acopi.admin')->first(); // Rol Administrador
++
++
++        // Asignación de PERMISOS para los ROLES de la aplicación AGROSOFT (Sincronización de las relaciones sin eliminar las relaciones existentes)
++        $rol_admin->permissions()->syncWithoutDetaching($permissions_admin);}
++}
+\ No newline at end of file
+diff --git a/Modules/ACOPI/Database/Seeders/RolesTableSeeder.php b/Modules/ACOPI/Database/Seeders/RolesTableSeeder.php
+new file mode 100644
+index 00000000..dee16d5b
+--- /dev/null
++++ b/Modules/ACOPI/Database/Seeders/RolesTableSeeder.php
+@@ -0,0 +1,27 @@
++<?php
++
++namespace Modules\ACOPI\Database\Seeders;
++
++use App\Models\User;
++use Illuminate\Database\Seeder;
++use Modules\SICA\Entities\App;
++use Modules\SICA\Entities\Role;
++
++class RolesTableSeeder extends Seeder
++{
++    public function run()
++    {
++        $app = App::where('name', 'ACOPI')->firstOrFail();
++
++        $roladmin = Role::updateOrCreate(['slug' => 'acopi.admin'], [
++            'name' => 'Administrador',
++            'description' => 'Rol administrador de la aplicación ACOPI',
++            'description_english' => 'ACOPI application administrator role',
++            'full_access' => 'No',
++            'app_id' => $app->id
++        ]);
++
++        $useradministrador = User::where('nickname', 'Jlemus')->firstOrFail();
++
++        $useradministrador->roles()->syncWithoutDetaching([$roladmin->id]);}
++}
+\ No newline at end of file
+diff --git a/Modules/ACOPI/Database/Seeders/UsersTableSeeder.php b/Modules/ACOPI/Database/Seeders/UsersTableSeeder.php
+new file mode 100644
+index 00000000..f9b8c018
+--- /dev/null
++++ b/Modules/ACOPI/Database/Seeders/UsersTableSeeder.php
+@@ -0,0 +1,20 @@
++<?php
++
++namespace Modules\ACOPI\Database\Seeders;
++
++use App\Models\User;
++use Illuminate\Database\Seeder;
++use Modules\SICA\Entities\Person;
++
++class UsersTableSeeder extends Seeder
++{
++    public function run()
++    {
++        $person = Person::where('document_number', 1029880898)->first();
++        User::updateOrCreate(['nickname' => 'Jlemus'], [
++            'person_id' => $person->id,
++            'email' => 'juandiegolemusff@gmail.com' //Jule0898
++        ]);
++        
++    }
++}
+diff --git a/Modules/ACOPI/Http/Controllers/ACOPIController.php b/Modules/ACOPI/Http/Controllers/ACOPIController.php
+index dde41926..d6413722 100644
+--- a/Modules/ACOPI/Http/Controllers/ACOPIController.php
++++ b/Modules/ACOPI/Http/Controllers/ACOPIController.php
+@@ -16,6 +16,15 @@ class ACOPIController extends Controller
+     {
+         return view('acopi::index');
+     }
++    public function welcome()
++    {
++        return view('acopi::welcome');
++    }
++    public function admin()
++    {
++        return view('acopi::welcome');
++    }
++
+ 
+     /**
+      * Show the form for creating a new resource.
+@@ -23,7 +32,7 @@ class ACOPIController extends Controller
+      */
+     public function create()
+     {
+-        return view('acopi::create');
++        return view('acopi::welcome');
+     }
+ 
+     /**
+@@ -43,37 +52,7 @@ class ACOPIController extends Controller
+      */
+     public function show($id)
+     {
+-        return view('acopi::show');
+-    }
+-
+-    /**
+-     * Show the form for editing the specified resource.
+-     * @param int $id
+-     * @return Renderable
+-     */
+-    public function edit($id)
+-    {
+-        return view('acopi::edit');
+-    }
+-
+-    /**
+-     * Update the specified resource in storage.
+-     * @param Request $request
+-     * @param int $id
+-     * @return Renderable
+-     */
+-    public function update(Request $request, $id)
+-    {
+-        //
++        return view('acopi::welcome');
+     }
+ 
+-    /**
+-     * Remove the specified resource from storage.
+-     * @param int $id
+-     * @return Renderable
+-     */
+-    public function destroy($id)
+-    {
+-        //
+-    }
+-}
++}
+\ No newline at end of file
+diff --git a/Modules/ACOPI/Resources/views/index.blade.php b/Modules/ACOPI/Resources/views/index.blade.php
+index 66569bcf..0dbc3be1 100644
+--- a/Modules/ACOPI/Resources/views/index.blade.php
++++ b/Modules/ACOPI/Resources/views/index.blade.php
+@@ -1,4 +1,4 @@
+-@extends('acopi::layouts.master')
++@extends('acopi::layouts.masterusers')
+ 
+ @section('content')
+     <h1>Hello World</h1>
+diff --git a/Modules/ACOPI/Resources/views/layouts/master.blade.php b/Modules/ACOPI/Resources/views/layouts/master.blade.php
+index 0fe5ffdd..8ba909f9 100644
+--- a/Modules/ACOPI/Resources/views/layouts/master.blade.php
++++ b/Modules/ACOPI/Resources/views/layouts/master.blade.php
+@@ -1,19 +1,550 @@
+ <!DOCTYPE html>
+ <html lang="en">
+-    <head>
+-        <meta charset="utf-8">
+-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+-        <meta name="viewport" content="width=device-width, initial-scale=1">
+-        <title>Module ACOPI</title>
+-
+-       {{-- Laravel Mix - CSS File --}}
+-       {{-- <link rel="stylesheet" href="{{ mix('css/acopi.css') }}"> --}}
+-
+-    </head>
+-    <body>
+-        @yield('content')
+-
+-        {{-- Laravel Mix - JS File --}}
+-        {{-- <script src="{{ mix('js/acopi.js') }}"></script> --}}
+-    </body>
++
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <meta http-equiv="X-UA-Compatible" content="ie=edge">
++    <link rel="icon" href="{{ asset('images/Favicon2.png')}}" type="image/x-icon">
++    <title>Gestion de Unidad de Cultivos</title>
++    <!-- Google Font: Source Sans Pro -->
++    <link rel="stylesheet"
++        href="{{ asset('AdminLTE/https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback') }}">
++    <!-- Font Awesome -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
++    <!-- Theme style -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
++    <!-- overlayScrollbars -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
++
++    <script src="{{ asset('js/app.js') }}" defer></script>
++    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
++</head>
++
++<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
++    <div class="wrapper">
++        <!-- Preloader -->
++        <div class="preloader flex-column justify-content-center align-items-center">
++            <img class="animation__wobble" src="{{ asset('images/images.png') }}" alt="AdminLTELogo" height="100"
++                width="150">
++        </div>
++
++        <nav class="main-header navbar navbar-expand navbar-dark">
++            <!-- Left navbar links -->
++            <ul class="navbar-nav">
++                <li class="nav-item">
++                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
++                </li>
++                <li class="nav-item d-none d-sm-inline-block">
++                    <a href="#" class="nav-link">Home</a>
++                </li>
++                <li class="nav-item d-none d-sm-inline-block">
++                    @if(Auth::check())
++                    @if(checkRol('agrosoft.admin'))
++    
++                    <li style="margin-right:80px">
++                        <a href="{{ route('agrosoft.admin.welcome') }}" id="an"
++                            class="nav link nav @if (Route::is('agrosoft.admin.*')) active @endif">Administrador</a>
++                    </li>
++                    @endif
++                    @endif
++                </li>
++            </ul>
++
++            <!-- Right navbar links -->
++            <ul class="navbar-nav ml-auto">
++                <!-- Navbar Search -->
++                <li class="nav-item">
++                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
++                        <i class="fas fa-search"></i>
++                    </a>
++                    <div class="navbar-search-block">
++                        <form class="form-inline">
++                            <div class="input-group input-group-sm">
++                                <input class="form-control form-control-navbar" type="search" placeholder="Search"
++                                    aria-label="Search">
++                                <div class="input-group-append">
++                                    <button class="btn btn-navbar" type="submit">
++                                        <i class="fas fa-search"></i>
++                                    </button>
++                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
++                                        <i class="fas fa-times"></i>
++                                    </button>
++                                </div>
++                            </div>
++                        </form>
++                    </div>
++                </li>
++
++                <!-- Messages Dropdown Menu -->
++                <li class="nav-item dropdown">
++                    <a class="nav-link" data-toggle="dropdown" href="#">
++                        <i class="far fa-comments"></i>
++                        <span class="badge badge-danger navbar-badge">3</span>
++                    </a>
++                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
++                        <a href="#" class="dropdown-item">
++                            <div class="media">
++                                <img src="{{ asset('AdminLTE/dist/img/user1-128x128.jpg') }}" alt="User Avatar"
++                                    class="img-size-50 mr-3 img-circle">
++                                <div class="media-body">
++                                    <h3 class="dropdown-item-title">
++                                        Brad Diesel
++                                        <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
++                                    </h3>
++                                    <p class="text-sm">Call me whenever you can...</p>
++                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
++                                </div>
++                            </div>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <div class="media">
++                                <img src="{{ asset('AdminLTE/dist/img/user8-128x128.jpg') }}" alt="User Avatar"
++                                    class="img-size-50 img-circle mr-3">
++                                <div class="media-body">
++                                    <h3 class="dropdown-item-title">
++                                        John Pierce
++                                        <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
++                                    </h3>
++                                    <p class="text-sm">I got your message bro</p>
++                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
++                                </div>
++                            </div>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <div class="media">
++                                <img src="{{ asset('AdminLTE/dist/img/user3-128x128.jpg') }}" alt="User Avatar"
++                                    class="img-size-50 img-circle mr-3">
++                                <div class="media-body">
++                                    <h3 class="dropdown-item-title">
++                                        Nora Silvester
++                                        <span class="float-right text-sm text-warning"><i
++                                                class="fas fa-star"></i></span>
++                                    </h3>
++                                    <p class="text-sm">The subject goes here</p>
++                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
++                                </div>
++                            </div>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
++                    </div>
++                </li>
++                <!-- Notifications Dropdown Menu -->
++                <li class="nav-item dropdown">
++                    <a class="nav-link" data-toggle="dropdown" href="#">
++                        <i class="far fa-bell"></i>
++                        <span class="badge badge-warning navbar-badge">15</span>
++                    </a>
++                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
++                        <span class="dropdown-item dropdown-header">15 Notifications</span>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <i class="fas fa-envelope mr-2"></i> 4 new messages
++                            <span class="float-right text-muted text-sm">3 mins</span>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <i class="fas fa-users mr-2"></i> 8 friend requests
++                            <span class="float-right text-muted text-sm">12 hours</span>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <i class="fas fa-file mr-2"></i> 3 new reports
++                            <span class="float-right text-muted text-sm">2 days</span>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
++                    </div>
++                </li>
++                <li class="nav-item dropdown">
++                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
++                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
++
++                    </a>
++                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
++                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
++                                         document.getElementById('logout-form').submit();">
++                            Cerrar Sesión
++                        </a>
++                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
++                            @csrf
++                        </form>
++                    </div>
++                </li>
++            </ul>
++        </nav>
++
++        <aside class="main-sidebar sidebar-dark-primary elevation-4">
++            <!-- Brand Logo -->
++            <a href="index3.html" class="brand-link">
++                <img src="{{ asset('AdminLTE/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
++                    class="brand-image img-circle elevation-3" style="opacity: .8">
++                <span class="brand-text font-weight-light">GDF</span>
++            </a>
++
++            <div class="sidebar">
++                <!-- Sidebar user panel -->
++                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
++                    <div class="image">
++                        <img src="{{ asset('AdminLTE/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2"
++                            alt="User Image">
++                    </div>
++                    <div class="info">
++                        <a href="#" class="d-block"></a>
++                    </div>
++                </div>
++
++                <!-- SidebarSearch Form -->
++
++
++                <nav class="mt-2">
++                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
++                        data-accordion="false">
++
++
++
++                        <li class="nav-item">
++                            <a href="#" class="nav-link">
++                                <i class="nav-icon fas fa-hourglass-half"></i>
++                                <p>Estado de Solitudes</p>
++                            </a>
++                        </li>
++                        <li class="nav-item">
++                            <a href="#" class="nav-link">
++                                <i class="nav-icon fas fa-clipboard-list"></i>
++                                <p>Historial de Solicitudes</p>
++                            </a>
++                        </li>
++                    </ul>
++                </nav>
++            </div>
++        </aside>
++
++        <div class="content-wrapper">
++            @yield('content')
++        </div>
++
++        <!-- Control Sidebar -->
++        <aside class="control-sidebar control-sidebar-dark">
++            <!-- Control sidebar content goes here -->
++        </aside>
++
++        <footer class="main-footer"
++            style="width: 100%; position: fixed; bottom: 0; left: 0; background-color: #343a40; color: white; padding: 10px 20px;">
++            <strong>Copyright © 2023-2025
++                <a href="#" style="color: #3c8dbc;">GDF</a>.
++            </strong>
++            All rights reserved.
++            <div class="float-right d-none d-sm-inline-block">
++                <b>Version</b> 3.2.0
++            </div>
++        </footer>
++    </div>
++
++    <!-- jQuery -->
++    <script src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
++    <!-- jQuery UI 1.11.4 -->
++    <script src="{{ asset('AdminLTE/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
++    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
++    <script>
++        $.widget.bridge('uibutton', $.ui.button)
++    </script>
++    <!-- Bootstrap 4 -->
++    <script src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
++    <!-- overlayScrollbars -->
++    <script src="{{ asset('AdminLTE/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
++    <!-- AdminLTE App -->
++    <script src="{{ asset('AdminLTE/dist/js/adminlte.js') }}"></script>
++    <!-- PAGE PLUGINS -->
++    <!-- jQuery Mapael -->
++    <script src="{{ asset('AdminLTE/plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
++    <script src="{{ asset('AdminLTE-/plugins/raphael/raphael.min.js') }}"></script>
++    <script src="{{ asset('AdminLTE/plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
++    <script src="{{ asset('AdminLTE/plugins/jquery-mapael/maps/usa_states.min.js') }}"></script>
++    <!-- ChartJS -->
++    <script src="{{ asset('AdminLTE/plugins/chart.js/Chart.min.js') }}"></script>
++    <!-- AdminLTE for demo purposes -->
++    <script src="{{ asset('AdminLTE/dist/js/demo.js') }}"></script>
++    <!-- AdminLTE dashboard demo -->
++    <script src="{{ asset('AdminLTE/dist/js/pages/dashboard2.js') }}"></script>
++</body>
++
+ </html>
++<!DOCTYPE html>
++<html lang="en">
++
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <meta http-equiv="X-UA-Compatible" content="ie=edge">
++    <link rel="icon" href="{{ asset('images/Favicon2.png')}}" type="image/x-icon">
++    <title>Gestion de Unidad de Cultivos</title>
++    <!-- Google Font: Source Sans Pro -->
++    <link rel="stylesheet"
++        href="{{ asset('AdminLTE/https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback') }}">
++    <!-- Font Awesome -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
++    <!-- Theme style -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
++    <!-- overlayScrollbars -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
++
++    <script src="{{ asset('js/app.js') }}" defer></script>
++    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
++</head>
++
++<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
++    <div class="wrapper">
++        <!-- Preloader -->
++        <div class="preloader flex-column justify-content-center align-items-center">
++            <img class="animation__wobble" src="{{ asset('images/images.png') }}" alt="AdminLTELogo" height="100"
++                width="150">
++        </div>
++
++        <nav class="main-header navbar navbar-expand navbar-dark">
++            <!-- Left navbar links -->
++            <ul class="navbar-nav">
++                <li class="nav-item">
++                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
++                </li>
++                <li class="nav-item d-none d-sm-inline-block">
++                    <a href="#" class="nav-link">Home</a>
++                </li>
++                <li class="nav-item d-none d-sm-inline-block">
++                    @if(Auth::check())
++                    @if(checkRol('agrosoft.admin'))
++    
++                    <li style="margin-right:80px">
++                        <a href="{{ route('agrosoft.admin.welcome') }}" id="an"
++                            class="nav link nav @if (Route::is('agrosoft.admin.*')) active @endif">Administrador</a>
++                    </li>
++                    @endif
++                    @endif
++                </li>
++            </ul>
++
++            <!-- Right navbar links -->
++            <ul class="navbar-nav ml-auto">
++                <!-- Navbar Search -->
++                <li class="nav-item">
++                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
++                        <i class="fas fa-search"></i>
++                    </a>
++                    <div class="navbar-search-block">
++                        <form class="form-inline">
++                            <div class="input-group input-group-sm">
++                                <input class="form-control form-control-navbar" type="search" placeholder="Search"
++                                    aria-label="Search">
++                                <div class="input-group-append">
++                                    <button class="btn btn-navbar" type="submit">
++                                        <i class="fas fa-search"></i>
++                                    </button>
++                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
++                                        <i class="fas fa-times"></i>
++                                    </button>
++                                </div>
++                            </div>
++                        </form>
++                    </div>
++                </li>
++
++                <!-- Messages Dropdown Menu -->
++                <li class="nav-item dropdown">
++                    <a class="nav-link" data-toggle="dropdown" href="#">
++                        <i class="far fa-comments"></i>
++                        <span class="badge badge-danger navbar-badge">3</span>
++                    </a>
++                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
++                        <a href="#" class="dropdown-item">
++                            <div class="media">
++                                <img src="{{ asset('AdminLTE/dist/img/user1-128x128.jpg') }}" alt="User Avatar"
++                                    class="img-size-50 mr-3 img-circle">
++                                <div class="media-body">
++                                    <h3 class="dropdown-item-title">
++                                        Brad Diesel
++                                        <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
++                                    </h3>
++                                    <p class="text-sm">Call me whenever you can...</p>
++                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
++                                </div>
++                            </div>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <div class="media">
++                                <img src="{{ asset('AdminLTE/dist/img/user8-128x128.jpg') }}" alt="User Avatar"
++                                    class="img-size-50 img-circle mr-3">
++                                <div class="media-body">
++                                    <h3 class="dropdown-item-title">
++                                        John Pierce
++                                        <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
++                                    </h3>
++                                    <p class="text-sm">I got your message bro</p>
++                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
++                                </div>
++                            </div>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <div class="media">
++                                <img src="{{ asset('AdminLTE/dist/img/user3-128x128.jpg') }}" alt="User Avatar"
++                                    class="img-size-50 img-circle mr-3">
++                                <div class="media-body">
++                                    <h3 class="dropdown-item-title">
++                                        Nora Silvester
++                                        <span class="float-right text-sm text-warning"><i
++                                                class="fas fa-star"></i></span>
++                                    </h3>
++                                    <p class="text-sm">The subject goes here</p>
++                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
++                                </div>
++                            </div>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
++                    </div>
++                </li>
++                <!-- Notifications Dropdown Menu -->
++                <li class="nav-item dropdown">
++                    <a class="nav-link" data-toggle="dropdown" href="#">
++                        <i class="far fa-bell"></i>
++                        <span class="badge badge-warning navbar-badge">15</span>
++                    </a>
++                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
++                        <span class="dropdown-item dropdown-header">15 Notifications</span>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <i class="fas fa-envelope mr-2"></i> 4 new messages
++                            <span class="float-right text-muted text-sm">3 mins</span>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <i class="fas fa-users mr-2"></i> 8 friend requests
++                            <span class="float-right text-muted text-sm">12 hours</span>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item">
++                            <i class="fas fa-file mr-2"></i> 3 new reports
++                            <span class="float-right text-muted text-sm">2 days</span>
++                        </a>
++                        <div class="dropdown-divider"></div>
++                        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
++                    </div>
++                </li>
++                <li class="nav-item dropdown">
++                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
++                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
++
++                    </a>
++                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
++                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
++                                         document.getElementById('logout-form').submit();">
++                            Cerrar Sesión
++                        </a>
++                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
++                            @csrf
++                        </form>
++                    </div>
++                </li>
++            </ul>
++        </nav>
++
++        <aside class="main-sidebar sidebar-dark-primary elevation-4">
++            <!-- Brand Logo -->
++            <a href="index3.html" class="brand-link">
++                <img src="{{ asset('AdminLTE/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
++                    class="brand-image img-circle elevation-3" style="opacity: .8">
++                <span class="brand-text font-weight-light">GDF</span>
++            </a>
++
++            <div class="sidebar">
++                <!-- Sidebar user panel -->
++                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
++                    <div class="image">
++                        <img src="{{ asset('AdminLTE/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2"
++                            alt="User Image">
++                    </div>
++                    <div class="info">
++                        <a href="#" class="d-block"></a>
++                    </div>
++                </div>
++
++                <!-- SidebarSearch Form -->
++
++
++                <nav class="mt-2">
++                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
++                        data-accordion="false">
++
++
++
++                        <li class="nav-item">
++                            <a href="#" class="nav-link">
++                                <i class="nav-icon fas fa-hourglass-half"></i>
++                                <p>Estado de Solitudes</p>
++                            </a>
++                        </li>
++                        <li class="nav-item">
++                            <a href="#" class="nav-link">
++                                <i class="nav-icon fas fa-clipboard-list"></i>
++                                <p>Historial de Solicitudes</p>
++                            </a>
++                        </li>
++                    </ul>
++                </nav>
++            </div>
++        </aside>
++
++        <div class="content-wrapper">
++            @yield('content')
++        </div>
++
++        <!-- Control Sidebar -->
++        <aside class="control-sidebar control-sidebar-dark">
++            <!-- Control sidebar content goes here -->
++        </aside>
++
++        <footer class="main-footer"
++            style="width: 100%; position: fixed; bottom: 0; left: 0; background-color: #343a40; color: white; padding: 10px 20px;">
++            <strong>Copyright © 2023-2025
++                <a href="#" style="color: #3c8dbc;">GDF</a>.
++            </strong>
++            All rights reserved.
++            <div class="float-right d-none d-sm-inline-block">
++                <b>Version</b> 3.2.0
++            </div>
++        </footer>
++    </div>
++
++    <!-- jQuery -->
++    <script src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
++    <!-- jQuery UI 1.11.4 -->
++    <script src="{{ asset('AdminLTE/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
++    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
++    <script>
++        $.widget.bridge('uibutton', $.ui.button)
++    </script>
++    <!-- Bootstrap 4 -->
++    <script src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
++    <!-- overlayScrollbars -->
++    <script src="{{ asset('AdminLTE/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
++    <!-- AdminLTE App -->
++    <script src="{{ asset('AdminLTE/dist/js/adminlte.js') }}"></script>
++    <!-- PAGE PLUGINS -->
++    <!-- jQuery Mapael -->
++    <script src="{{ asset('AdminLTE/plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
++    <script src="{{ asset('AdminLTE-/plugins/raphael/raphael.min.js') }}"></script>
++    <script src="{{ asset('AdminLTE/plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
++    <script src="{{ asset('AdminLTE/plugins/jquery-mapael/maps/usa_states.min.js') }}"></script>
++    <!-- ChartJS -->
++    <script src="{{ asset('AdminLTE/plugins/chart.js/Chart.min.js') }}"></script>
++    <!-- AdminLTE for demo purposes -->
++    <script src="{{ asset('AdminLTE/dist/js/demo.js') }}"></script>
++    <!-- AdminLTE dashboard demo -->
++    <script src="{{ asset('AdminLTE/dist/js/pages/dashboard2.js') }}"></script>
++</body>
++
++</html>
+\ No newline at end of file
+diff --git a/Modules/ACOPI/Resources/views/layouts/masterusers.blade.php b/Modules/ACOPI/Resources/views/layouts/masterusers.blade.php
+new file mode 100644
+index 00000000..66293651
+--- /dev/null
++++ b/Modules/ACOPI/Resources/views/layouts/masterusers.blade.php
+@@ -0,0 +1,87 @@
++<!DOCTYPE html>
++<html lang="es">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <meta http-equiv="X-UA-Compatible" content="ie=edge">
++    <link rel="icon" href="{{ asset('images/Favicon2.png') }}" type="image/x-icon">
++    <title>Gestión de Unidad de Cultivos</title>
++    
++    <!-- Google Font: Source Sans Pro -->
++    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
++    <!-- Font Awesome -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
++    <!-- OverlayScrollbars -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
++    <!-- Theme style -->
++    <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
++    
++    <!-- Scripts cargados de forma diferida -->
++    <script src="{{ asset('js/app.js') }}" defer></script>
++    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
++</head>
++<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
++    <!-- Navbar -->
++    <nav class="navbar navbar-expand navbar-dark">
++        <ul class="navbar-nav">
++            <li class="nav-item d-none d-sm-inline-block">
++                <a href="{{ route('login') }}" class="nav-link">Inicio</a>
++
++            </li>
++            <li class="nav-item d-none d-sm-inline-block">
++            @auth
++                @if(checkRol('acopi.admin'))
++                    <li class="nav-item d-none d-sm-inline-block" style="margin-right: 80px;">
++                        <a href="{{ route('acopi.admin.welcome') }}" 
++                        class="nav-link @if(Route::is('acopi.admin.*')) active @endif">
++                            Administrador
++                        </a>
++                    </li>
++                @endif
++            @endauth
++        </li>
++        </ul>
++        
++    </nav>
++
++    <!-- Contenido principal -->
++   
++            <div class="container-fluid">
++                <div class="row">
++                    <div class="col-12 text-center mt-5">
++                        <h1 class="display-4">Bienvenido a Gestión de Unidad de Cultivos</h1>
++                        <p class="lead">
++                            Una solución integral para la administración eficiente de tus cultivos. 
++                            Optimiza tus procesos, incrementa la productividad y toma decisiones informadas 
++                            con nuestra plataforma diseñada para el éxito agrícola.
++                        </p>
++                        @auth
++                    
++                            <a href="{{ route('login') }}" class="btn btn-primary btn-lg mt-3">
++                                Iniciar Sesión
++                            </a>
++                        @endauth
++                    </div>
++                </div>
++            </div>
++    
++
++    <!-- Footer -->
++    <footer style="width: 100%; position: fixed; bottom: 0; left: 0; background-color: #343a40; color: white; padding: 10px 20px;">
++        <strong>Copyright &copy; 2023-2025 <a href="#" style="color: #3c8dbc;">GDF</a>.</strong> Todos los derechos reservados.
++        <div class="float-right d-none d-sm-inline-block">
++            <b>Versión</b> 3.2.0
++        </div>
++    </footer>
++
++    <!-- Scripts -->
++    <script src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
++    <script src="{{ asset('AdminLTE/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
++    <script>
++        $.widget.bridge('uibutton', $.ui.button);
++    </script>
++    <script src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
++    <script src="{{ asset('AdminLTE/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
++    <script src="{{ asset('AdminLTE/dist/js/adminlte.js') }}"></script>
++</body>
++</html>
+\ No newline at end of file
+diff --git a/Modules/ACOPI/Resources/views/welcome.blade.php b/Modules/ACOPI/Resources/views/welcome.blade.php
+new file mode 100644
+index 00000000..2bbd563a
+--- /dev/null
++++ b/Modules/ACOPI/Resources/views/welcome.blade.php
+@@ -0,0 +1,9 @@
++@extends('acopi::layouts.master')
++
++@section('content')
++    <h1>Hello World</h1>
++
++    <p>
++        This view is loaded from module: {!! config('agrosoft.name') !!}
++    </p>
++@endsection
+\ No newline at end of file
+diff --git a/Modules/ACOPI/Routes/web.php b/Modules/ACOPI/Routes/web.php
+index 2120838e..c5575aa8 100644
+--- a/Modules/ACOPI/Routes/web.php
++++ b/Modules/ACOPI/Routes/web.php
+@@ -11,6 +11,10 @@
+ |
+ */
+ 
+-Route::prefix('acopi')->group(function() {
+-    Route::get('/', 'ACOPIController@index');
+-});
++Route::middleware(['lang'])->group(function(){
++    Route::prefix('acopi')->group(function() {
++        Route::get('/index', 'ACOPIController@index')->name('cefa.acopi.index');
++        Route::get('/admin/welcome', 'ACOPIController@admin')->name('acopi.admin.welcome');
++
++    });
++});
+\ No newline at end of file
+-- 
+2.37.3.windows.1
+

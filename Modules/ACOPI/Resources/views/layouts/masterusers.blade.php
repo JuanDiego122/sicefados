@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{{ asset('AdminLTE/dist/img/icon.png') }}" type="image/x-icon">
   <title>Centro de Acopio</title>
   <style>
     body {
@@ -18,7 +20,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     header img {
@@ -107,12 +109,12 @@
       height: 450px;
       border-radius: 25px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     /* Agregamos efecto de zoom */
     .contenedor-imagen img {
-      width:100%;
+      width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
@@ -124,87 +126,103 @@
     }
 
     .hoja {
-  position: fixed; /* Antes era absolute */
-  top: -30px; /* Para que empiecen fuera de la vista */
-  width: 60px;
-  height: 40px;
-  background-image: url('images/2h.png'); /* Imagen de hoja */
-  background-size: cover;
-  animation: caer 5s linear forwards; /* Un poco más lento */
-  pointer-events: none;
-  z-index: 9999; /* Asegura que estén encima de todo */
-}
+      position: fixed;
+      /* Antes era absolute */
+      top: -30px;
+      /* Para que empiecen fuera de la vista */
+      width: 60px;
+      height: 40px;
+      background-image: url('images/2h.png');
+      /* Imagen de hoja */
+      background-size: cover;
+      animation: caer 5s linear forwards;
+      /* Un poco más lento */
+      pointer-events: none;
+      z-index: 9999;
+      /* Asegura que estén encima de todo */
+    }
 
-@keyframes caer {
-  0% {
-    transform: translateX(0) translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(var(--desplazamiento-x, 100px)) translateY(100vh) rotate(var(--rotacion, 360deg));
-    opacity: 0;
-  }
-}
+    @keyframes caer {
+      0% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+        opacity: 1;
+      }
 
+      100% {
+        transform: translateX(var(--desplazamiento-x, 100px)) translateY(100vh) rotate(var(--rotacion, 360deg));
+        opacity: 0;
+      }
+    }
   </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">
-    <img src="images/reciclaje.png" alt="Logo Reciclaje">
-    Centro De Acopio
-  </div>
-  <nav>
-    <a href="#">Inicio</a>
-    <a href="#">Caracteristicas</a>
-    <a href="#">Como Funciona </a>
-    <a href="#" class="boton-contacto">Ventajas →</a>
-  </nav>
-</header>
+  <header>
+    <div class="logo">
+      <img src="{{ asset('AdminLTE/dist/img/icon.png') }}" alt="Logo Reciclaje">
+      Centro De Acopio
+    </div>
+    <nav>
+      @auth
+      @if(checkRol('acopi.admin'))
+      
+        <a href="{{ route('acopi.admin.welcome') }}"
+          class="nav-link @if(Route::is('acopi.admin.*')) active @endif">
+          Administrador
+        </a>
+      
+      @endif
+      @endauth
+      <a href="{{ route('login')}}">Login</a>
+      <a href="#">Caracteristicas</a>
+      <a href="#">Como Funciona </a>
+      <a href="#" class="boton-contacto">Ventajas →</a>
+    </nav>
+  </header>
 
-<section class="contenido">
-  <div class="contenido-texto">
-    <h1>Bienvenido a Acopi</h1>
-    <p>Un espacio dedicado a transformar materiales aprovechables en recursos valiosos para un futuro sostenible.</p>
-    <a href="{{ route('login') }}">Ingresar</a>
-    <b>Toca la imagen →</b>
-  </div>
-  <div class="contenedor-imagen" id="contenedorImagen">
-    <img src="public/images/2.jpg" alt="Centro de Acopio">
-  </div>
-</section>
+  <section class="contenido">
+    <div class="contenido-texto">
+      <h1>Bienvenido a Acopi</h1>
+      <p>Un espacio dedicado a transformar materiales aprovechables en recursos valiosos para un futuro sostenible.</p>
+      <a href="{{ route('login') }}">Ingresar</a>
+      <b>Toca la imagen →</b>
+    </div>
+    <div class="contenedor-imagen" id="contenedorImagen">
+      <img src="{{ asset('AdminLTE/dist/img/centro.jpg') }}" alt="Centro de Acopio">
+    </div>
+  </section>
 
-<script>
-  const contenedor = document.getElementById('contenedorImagen');
+  <script>
+    const contenedor = document.getElementById('contenedorImagen');
 
-  contenedor.addEventListener('mouseenter', () => {
-    for (let i = 0; i < 10; i++) {
-      crearHoja();
+    contenedor.addEventListener('mouseenter', () => {
+      for (let i = 0; i < 10; i++) {
+        crearHoja();
+      }
+    });
+
+    function crearHoja() {
+      const hoja = document.createElement('div');
+      hoja.classList.add('hoja');
+      hoja.style.left = Math.random() * window.innerWidth + "px";
+
+      // Animación personalizada para cada hoja
+      const desplazamientoX = Math.random() * 200 - 100; // Oscila entre -100px y +100px
+      const rotacion = Math.random() * 720 - 360; // Rota entre -360 y +360 grados
+      hoja.style.animation = `caer 5s linear forwards`;
+      hoja.style.setProperty('--desplazamiento-x', desplazamientoX + 'px');
+      hoja.style.setProperty('--rotacion', rotacion + 'deg');
+
+      document.body.appendChild(hoja);
+
+      setTimeout(() => {
+        hoja.remove();
+      }, 5000);
     }
-  });
-
-  function crearHoja() {
-  const hoja = document.createElement('div');
-  hoja.classList.add('hoja');
-  hoja.style.left = Math.random() * window.innerWidth + "px";
-  
-  // Animación personalizada para cada hoja
-  const desplazamientoX = Math.random() * 200 - 100; // Oscila entre -100px y +100px
-  const rotacion = Math.random() * 720 - 360; // Rota entre -360 y +360 grados
-  hoja.style.animation = `caer 5s linear forwards`;
-  hoja.style.setProperty('--desplazamiento-x', desplazamientoX + 'px');
-  hoja.style.setProperty('--rotacion', rotacion + 'deg');
-
-  document.body.appendChild(hoja);
-
-  setTimeout(() => {
-    hoja.remove();
-  }, 5000);
-}
-
-</script>
+  </script>
 
 
 </body>
+
 </html>

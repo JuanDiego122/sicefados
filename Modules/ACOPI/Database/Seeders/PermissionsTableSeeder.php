@@ -34,6 +34,26 @@ class PermissionsTableSeeder extends Seeder
 
 
 
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.create'], [ // Registro o actualización de permiso
+            'name' => 'Formulario de registro de material',
+            'description' => 'Formulario de registro de material',
+            'description_english' => 'Access to the Administrator Role',    
+            'app_id' => $app->id
+        ]);
+
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.store'], [ // Registro o actualización de permiso
+            'name' => 'Registro de material',
+            'description' => 'Ingreso de material en centro de acopio',
+            'description_english' => 'Access to the Administrator Role',
+            'app_id' => $app->id
+        ]);
+        
+        
+        
+        $permissions_admin[] = $permission->id; // Almacenar permiso para rol
+
+
+
         // Consulta de ROLES
         $rol_admin = Role::where('slug', 'acopi.admin')->first(); // Rol Administrador
 

@@ -19,10 +19,11 @@ class AppTableSeeder extends Seeder
     
         $app = App::updateOrCreate(['name' => 'ACOPI'], [
             'url' => '/acopi/index',
-            'color' => '#76250C',
-            'icon' => 'fas fa-mug-hot',
-            'description' => 'Registro de ventas en Estación de Café del CEFA',
-            'description_english' => 'Sales record at CEFA Coffee Station'
+            'color' => '#0cab05',
+            'icon' => 'fas fa-box-open',
+            'description' => 'Sistemas de Gestión Centro de Acopio',
+            'description_english' => 'Management Systems Coffee Collection Center',
+          
         ]);
 
     }
