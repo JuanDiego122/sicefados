@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
 use Modules\AGROCEFA\Http\Controllers\AGROCEFAController;
 use Modules\AGROCEFA\Http\Controllers\UsuarioController;
 use Modules\AGROCEFA\Http\Controllers\LaborManagementController;

@@ -5,10 +5,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cellar extends Model
 {
-    protected $fillable = ['nombre', 'ubicacion']; // o los atributos que tú definiste
+    protected $fillable = ['name', 'ubicacion'];
+    
+    protected $table = 'cellars';// o los atributos que tú definiste
 
     public function materials()
     {
         return $this->hasMany(Material::class);
     }
+    
 }

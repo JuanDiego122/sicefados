@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Classification extends Model
 {
-    protected $fillable = ['nombre_classification'];
+    protected $fillable = ['classification_name'];
+    protected $table ='classifications';
 
     public function materials()
     {

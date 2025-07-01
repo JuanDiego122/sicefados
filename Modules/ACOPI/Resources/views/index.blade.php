@@ -7,3 +7,8 @@
         This view is loaded from module: {!! config('acopi.name') !!}
     </p>
 @endsection
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+   

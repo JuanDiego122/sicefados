@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Acopi\Http\Controllers;
+namespace Modules\ACOPI\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Acopi\Entities\Material;
-use Modules\Acopi\Entities\Classification;
-use Modules\Acopi\Entities\Cellar;
+use Modules\ACOPI\Entities\Material;
+use Modules\ACOPI\Entities\Classification;
+use Modules\ACOPI\Entities\Cellar;
 
 class MaterialController extends Controller
 {
@@ -15,55 +15,56 @@ class MaterialController extends Controller
         $materials = Material::all();
         $cellars = Cellar::all();
         $classifications = Classification::all();
-    
+
         return view('acopi::admin.index', compact('materials', 'cellars', 'classifications'));
     }
 
     public function create()
-{
-    $classifications = Classification::all();
-    $cellars = Cellar::all();
-    return view('acopi::admin.create', compact('classifications', 'cellars'));
-}
-
-public function store(Request $request)
-{
-    $request->validate([
-        'nombre' => 'required|string|max:255',
-        'descripcion' => 'required|string',
-        'classification_id' => 'required|exists:classifications,id',
-        'peso' => 'required|numeric',
-        'fecha_ingreso' => 'required|date',
-        'ubicacion' => 'required|string',
-        'cellar_id' => 'required|exists:cellars,id',
-    ]);
-
-    // Crear el material
-    Material::create([
-        'nombre' => $request->nombre,
-        'descripcion' => $request->descripcion,
-        'classification_id' => $request->classification_id,
-        'peso' => $request->peso,
-        'fecha_ingreso' => $request->fecha_ingreso,
-        'ubicacion' => $request->ubicacion,
-        'cellar_id' => $request->cellar_id,
-    ]);
-
-    return redirect()->back()->with('success', 'Material guardado correctamente.');
-}
-
-    public function edit($id)
     {
-       
+        $classifications = Classification::all();
+        $cellars = Cellar::all();
+
+        return view('acopi::material.create', compact('classifications', 'cellars'));
     }
 
-    public function update(Request $request, $id)
+    public function store(Request $request)
     {
-        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'classification_id' => 'required|exists:classifications,id',
+            'weight' => 'required|numeric',
+            'entry_date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'cellar_id' => 'required|exists:cellars,id',
+        ]);
+
+        $material = new Material();
+        $material->name = $request->name;
+        $material->description = $request->description;
+        $material->classification_id = $request->classification_id;
+        $material->weight = $request->weight;
+        $material->entry_date = $request->entry_date;
+        $material->location = $request->location;
+        $material->cellar_id = $request->cellar_id;
+        $material->save();
+
+        return redirect()->route('acopi.admin.material.listas')
+                         ->with('success', 'Material creado correctamente');
+    }
+
+    public function showList()
+    {
+        $materials = Material::with('classification', 'cellar')->get();
+        return view('acopi::material.lista', compact('materials'));
     }
 
     public function destroy($id)
     {
-       
+        $material = Material::findOrFail($id);
+        $material->delete();
+
+        return redirect()->route('acopi.admin.material.listas')
+                         ->with('success', 'Material eliminado correctamente.');
     }
 }

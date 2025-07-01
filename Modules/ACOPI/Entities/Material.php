@@ -9,12 +9,12 @@ class Material extends Model
 {
     // App\Models\Material.php
 protected $fillable = [
-    'nombre',
-    'descripcion',
+    'name',
+    'description',
     'classification_id',
-    'peso',
-    'fecha_ingreso',
-    'ubicacion',
+    'weight',
+    'entry_date',
+    'location',
     'cellar_id',
 ];
 

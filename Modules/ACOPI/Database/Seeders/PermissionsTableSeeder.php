@@ -9,55 +9,76 @@ use Modules\SICA\Entities\Role;
 
 class PermissionsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        // Crear una lista de permisos para el rol 
-        $permissions_admin = []; // Lista de permisos para el rol de administrador
-        
-        // Consultar aplicación SICA para registrar los roles
+        // Lista de permisos que se asignarán al rol administrador
+        $permissions_admin = [];
+
+        // Buscar la aplicación ACOPI
         $app = App::where('name', 'ACOPI')->first();
 
-
-        // Vista de configuración (Administrador)
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.welcome'], [ // Registro o actualización de permiso
+        // Permiso para la vista principal del administrador
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.welcome'], [
             'name' => 'Acceso al Rol de Administrador',
             'description' => 'Acceso al Rol de Administrador',
             'description_english' => 'Access to the Administrator Role',
             'app_id' => $app->id
         ]);
-        $permissions_admin[] = $permission->id; // Almacenar permiso para rol
+        $permissions_admin[] = $permission->id;
 
-
-
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.create'], [ // Registro o actualización de permiso
+        // Permisos para Material
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.create'], [
             'name' => 'Formulario de registro de material',
-            'description' => 'Formulario de registro de material',
-            'description_english' => 'Access to the Administrator Role',    
+            'description' => 'Acceso al formulario de registro de material',
+            'description_english' => 'Access to material creation form',
             'app_id' => $app->id
         ]);
+        $permissions_admin[] = $permission->id;
 
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.store'], [ // Registro o actualización de permiso
-            'name' => 'Registro de material',
-            'description' => 'Ingreso de material en centro de acopio',
-            'description_english' => 'Access to the Administrator Role',
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.index'], [
+            'name' => 'Visualización de materiales',
+            'description' => 'Acceso a la vista de materiales',
+            'description_english' => 'Access to material index view',
             'app_id' => $app->id
         ]);
-        
-        
-        
-        $permissions_admin[] = $permission->id; // Almacenar permiso para rol
+        $permissions_admin[] = $permission->id;
 
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.store'], [
+            'name' => 'Registrar material',
+            'description' => 'Permite guardar nuevos materiales',
+            'description_english' => 'Allows storing materials',
+            'app_id' => $app->id
+        ]);
+        $permissions_admin[] = $permission->id;
 
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.listas'], [
+            'name' => 'Listado de materiales',
+            'description' => 'Acceso a la lista de materiales registrados',
+            'description_english' => 'Access to the list of registered materials',
+            'app_id' => $app->id
+        ]);
+        $permissions_admin[] = $permission->id;
 
-        // Consulta de ROLES
-        $rol_admin = Role::where('slug', 'acopi.admin')->first(); // Rol Administrador
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.update'], [
+            'name' => 'Editar material',
+            'description' => 'Permite actualizar datos del material',
+            'description_english' => 'Allows updating material data',
+            'app_id' => $app->id
+        ]);
+        $permissions_admin[] = $permission->id;
 
+        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.destroy'], [
+            'name' => 'Eliminar material',
+            'description' => 'Permite eliminar materiales del sistema',
+            'description_english' => 'Allows deleting materials from the system',
+            'app_id' => $app->id
+        ]);
+        $permissions_admin[] = $permission->id;
 
-        // Asignación de PERMISOS para los ROLES de la aplicación AGROSOFT (Sincronización de las relaciones sin eliminar las relaciones existentes)
-        $rol_admin->permissions()->syncWithoutDetaching($permissions_admin);}
+        // Buscar el rol de administrador
+        $rol_admin = Role::where('slug', 'acopi.admin')->first();
+
+        // Asignar permisos al rol sin eliminar los existentes
+        $rol_admin->permissions()->syncWithoutDetaching($permissions_admin);
+    }
 }

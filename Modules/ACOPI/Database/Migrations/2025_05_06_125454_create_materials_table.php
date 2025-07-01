@@ -21,7 +21,6 @@ class CreateMaterialsTable extends Migration
             $table->decimal('weight', 8, 2); // Weight in kg
             $table->date('entry_date'); // Date of entry
             $table->string('location'); // Storage location
-            $table->string('type');
 
             // Foreign keys
             $table->unsignedBigInteger('classification_id');

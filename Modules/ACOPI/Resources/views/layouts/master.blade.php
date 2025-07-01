@@ -112,10 +112,15 @@
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
 
-        <!-- Preloader -->
-        <div class="preloader flex-column justify-content-center align-items-center">
-            <img class="animation__wobble" src="{{ asset('images/images.png') }}" alt="Logo Agrosoft" height="100" width="150">
-        </div>
+        <!-- Preloader Mejorado -->
+<div class="preloader d-flex flex-column justify-content-center align-items-center" style="background-color: #ffffff;">
+    <div class="spinner-border text-success" role="status" style="width: 4rem; height: 4rem;">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+    <img src="{{ asset('images/images.png') }}" alt="Logo Agrosoft" height="80" class="mt-3 animate__animated animate__pulse animate__infinite">
+    <p class="mt-2 text-success fw-bold">Cargando sistema...</p>
+</div>
+
 
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand">
@@ -187,7 +192,9 @@
                                 </li>
     
                                 <li class="nav-item">
-                                    <a href="" class="nav-link text-dark">
+                                 
+                                        <a href="{{ route('acopi.admin.material.listas') }}" class="nav-link text-dark">
+
                                         <i class="nav-icon fas fa-clipboard-list"></i>
                                         <p>Listas</p>
                                     </a>
@@ -197,29 +204,16 @@
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-calendar-check"  style="color: #198754"></i>
-                                <p  class="text-success">Solicitudes</p>
+                                <p  class="text-success">Pasante</p>
                                 <i class="fas fa-angle-right right" style="color: #198754"></i>
                             </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="" class="nav-link text-dark">
-                                        <i class="nav-icon fas fa-edit"></i>
-                                        <p>Ingreso</p>
-                                    </a>
-                                </li>
+                            
     
-                                <li class="nav-item">
-                                    <a href="" class="nav-link text-dark">
-                                        <i class="nav-icon fas fa-clipboard-list"></i>
-                                        <p>Listas</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                                
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-tools" style="color: #198754"></i>
-                                <p  class="text-success">Herramientas</p>
+                                <p  class="text-success">Actividades</p>
                                 <i class="fas fa-angle-right right" style="color: #198754"></i>
                             </a>
                             <ul class="nav nav-treeview">
@@ -230,10 +224,7 @@
                                     </a>
                                 </li>
     
-                                <li class="nav-item">
-                                    <a href="" class="nav-link text-dark">
-                                        <i class="nav-icon fas fa-clipboard-list"></i>
-                                        <p>Listas</p>
+                            
                                     </a>
                                 </li>
                             </ul>
@@ -246,6 +237,7 @@
         <!-- Contenido -->
         <div class="content-wrapper">
             @yield('content')
+            @yield('content2')
         </div>
 
         <!-- Sidebar de control (opcional) -->

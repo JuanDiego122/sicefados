@@ -1,9 +1,11 @@
 <?php
+use Illuminate\Support\Facades\Route;
 
+use Modules\ACOPI\Http\Controllers\CellarController;
+use Modules\ACOPI\Http\Controllers\ClassificationController;
+use Modules\ACOPI\Http\Controllers\MaterialController;
 
-
-
-Route::middleware(['lang'])->group(function () {
+Route::middleware(['web', 'lang'])->group(function () {
     Route::prefix('acopi')->group(function () {
 
         // Rutas principales
@@ -11,14 +13,14 @@ Route::middleware(['lang'])->group(function () {
         Route::get('/admin/welcome', 'ACOPIController@admin')->name('acopi.admin.welcome');
 
         // Rutas para Material
-        Route::controller(MaterialController::class)->group(function () {
-            Route::get('/admin/material', 'index')->name('acopi.admin.material.index');
-            Route::get('/admin/material/create', 'create')->name('acopi.admin.material.create');
-            Route::post('/admin/material/store', 'store')->name('acopi.admin.material.store');
-            Route::get('/admin/material/edit/{id}', 'edit')->name('acopi.admin.material.edit');
-            Route::put('/admin/material/update/{id}', 'update')->name('acopi.admin.material.update');
-            Route::delete('/admin/material/destroy/{id}', 'destroy')->name('acopi.admin.material.destroy');
-        });
+        Route::get('/admin/material', 'MaterialController@index')->name('acopi.admin.material.index');
+
+       Route::get('/admin/material/listas', [MaterialController::class, 'showList'])->name('acopi.admin.material.listas');
+
+        Route::get('/admin/material/create', 'MaterialController@create')->name('acopi.admin.material.create');
+        Route::post('/admin/material/store', 'MaterialController@store')->name('acopi.admin.material.store');
+        Route::put('/admin/material/update/{id}', 'MaterialController@update')->name('acopi.admin.material.update');
+        Route::delete('/admin/material/destroy/{id}', 'MaterialController@destroy')->name('acopi.admin.material.destroy');
 
         // Rutas para Cellar
         Route::controller(CellarController::class)->group(function () {
