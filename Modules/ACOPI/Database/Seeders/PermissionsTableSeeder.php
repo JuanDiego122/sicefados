@@ -26,59 +26,49 @@ class PermissionsTableSeeder extends Seeder
         ]);
         $permissions_admin[] = $permission->id;
 
-        // Permisos para Material
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.create'], [
-            'name' => 'Formulario de registro de material',
-            'description' => 'Acceso al formulario de registro de material',
-            'description_english' => 'Access to material creation form',
-            'app_id' => $app->id
-        ]);
-        $permissions_admin[] = $permission->id;
+        // ---------------- PERMISOS PARA MATERIALES ----------------
+        $permissions_materials = [
+            'acopi.admin.material.create' => 'Formulario de registro de material',
+            'acopi.admin.material.index' => 'Visualización de materiales',
+            'acopi.admin.material.store' => 'Registrar material',
+            'acopi.admin.material.listas' => 'Listado de materiales',
+            'acopi.admin.material.edit' => 'Formulario de edición de material',
+            'acopi.admin.material.update' => 'Editar material',
+            'acopi.admin.material.destroy' => 'Eliminar material',
+        ];
 
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.index'], [
-            'name' => 'Visualización de materiales',
-            'description' => 'Acceso a la vista de materiales',
-            'description_english' => 'Access to material index view',
-            'app_id' => $app->id
-        ]);
-        $permissions_admin[] = $permission->id;
+        foreach ($permissions_materials as $slug => $name) {
+            $permission = Permission::updateOrCreate(['slug' => $slug], [
+                'name' => $name,
+                'description' => $name,
+                'description_english' => 'Access to ' . $slug,
+                'app_id' => $app->id
+            ]);
+            $permissions_admin[] = $permission->id;
+        }
 
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.store'], [
-            'name' => 'Registrar material',
-            'description' => 'Permite guardar nuevos materiales',
-            'description_english' => 'Allows storing materials',
-            'app_id' => $app->id
-        ]);
-        $permissions_admin[] = $permission->id;
+        // ---------------- PERMISOS PARA BODEGAS (CELLAR) ----------------
+        $permissions_cellar = [
+            'acopi.admin.cellar.index' => 'Visualización de bodegas',
+            'acopi.admin.cellar.create' => 'Formulario de registro de bodega',
+            'acopi.admin.cellar.store' => 'Registrar bodega',
+            'acopi.admin.cellar.edit' => 'Formulario de edición de bodega',
+            'acopi.admin.cellar.update' => 'Editar bodega',
+            'acopi.admin.cellar.destroy' => 'Eliminar bodega',
+        ];
 
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.listas'], [
-            'name' => 'Listado de materiales',
-            'description' => 'Acceso a la lista de materiales registrados',
-            'description_english' => 'Access to the list of registered materials',
-            'app_id' => $app->id
-        ]);
-        $permissions_admin[] = $permission->id;
+        foreach ($permissions_cellar as $slug => $name) {
+            $permission = Permission::updateOrCreate(['slug' => $slug], [
+                'name' => $name,
+                'description' => $name,
+                'description_english' => 'Access to ' . $slug,
+                'app_id' => $app->id
+            ]);
+            $permissions_admin[] = $permission->id;
+        }
 
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.update'], [
-            'name' => 'Editar material',
-            'description' => 'Permite actualizar datos del material',
-            'description_english' => 'Allows updating material data',
-            'app_id' => $app->id
-        ]);
-        $permissions_admin[] = $permission->id;
-
-        $permission = Permission::updateOrCreate(['slug' => 'acopi.admin.material.destroy'], [
-            'name' => 'Eliminar material',
-            'description' => 'Permite eliminar materiales del sistema',
-            'description_english' => 'Allows deleting materials from the system',
-            'app_id' => $app->id
-        ]);
-        $permissions_admin[] = $permission->id;
-
-        // Buscar el rol de administrador
+        // Asignar todos los permisos al rol administrador al final
         $rol_admin = Role::where('slug', 'acopi.admin')->first();
-
-        // Asignar permisos al rol sin eliminar los existentes
         $rol_admin->permissions()->syncWithoutDetaching($permissions_admin);
     }
 }

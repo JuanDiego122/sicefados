@@ -1,14 +1,13 @@
-@extends('acopi::layouts.masterusers')
+{{-- Modules/ACOPI/Resources/views/index.blade.php --}}
+@extends('acopi::layouts.master')
+
+@section('title', 'Inicio del Módulo ACOPI')
 
 @section('content')
-    <h1>Hello World</h1>
-
-    <p>
-        This view is loaded from module: {!! config('acopi.name') !!}
-    </p>
+    <div class="container mt-4">
+        <h1 class="mb-4">Bienvenido al Módulo de Acopio</h1>
+        
+            </div>
+        </div>
+    </div>
 @endsection
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-   

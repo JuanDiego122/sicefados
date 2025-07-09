@@ -16,6 +16,7 @@ protected $fillable = [
     'entry_date',
     'location',
     'cellar_id',
+    'charge',
 ];
 
     public function classification()

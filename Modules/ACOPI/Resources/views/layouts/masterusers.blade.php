@@ -5,224 +5,53 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" href="{{ asset('AdminLTE/dist/img/icon.png') }}" type="image/x-icon">
-  <title>Centro de Acopio</title>
+  <title>Centro de Acopio - @yield('title')</title>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
+
+  <!-- Estilos adicionales -->
+  <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
       background: #f8f9fb;
-    }
-
-    header {
-      background: #fff;
-      padding: 20px 50px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    header img {
-      width: 40px;
-      margin-right: 10px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      font-size: 24px;
-      color: #0a0a0a;
-    }
-
-    nav a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: #0a0a0a;
-      font-weight: 500;
-    }
-
-    .boton-contacto {
-      background: #124905;
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    .boton-contacto:hover {
-      background: #2a851b;
-    }
-
-    .contenido {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 80px 100px;
-    }
-
-    .contenido-texto {
-      max-width: 50%;
-    }
-
-    .contenido-texto h1 {
-      font-size: 48px;
-      color: #1a1a1a;
-    }
-
-    .contenido-texto p {
-      font-size: 18px;
-      color: #555;
-      margin: 20px 0;
-    }
-
-    .contenido-texto a {
-      display: inline-block;
-      margin-right: 20px;
-      background: #124905;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    .contenido-texto a:hover {
-      background: #2a851b;
-    }
-
-    .contenido-texto b {
-      font-size: 20px;
-      display: inline-block;
-      color: #124905;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .contenedor-imagen {
-      position: relative;
-      width: 550px;
-      height: 450px;
-      border-radius: 25px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Agregamos efecto de zoom */
-    .contenedor-imagen img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.5s ease;
-    }
-
-    .contenedor-imagen:hover img {
-      transform: scale(1.1);
-    }
-
-    .hoja {
-      position: fixed;
-      /* Antes era absolute */
-      top: -30px;
-      /* Para que empiecen fuera de la vista */
-      width: 60px;
-      height: 40px;
-      background-image: url('images/2h.png');
-      /* Imagen de hoja */
-      background-size: cover;
-      animation: caer 5s linear forwards;
-      /* Un poco más lento */
-      pointer-events: none;
-      z-index: 9999;
-      /* Asegura que estén encima de todo */
-    }
-
-    @keyframes caer {
-      0% {
-        transform: translateX(0) translateY(0) rotate(0deg);
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateX(var(--desplazamiento-x, 100px)) translateY(100vh) rotate(var(--rotacion, 360deg));
-        opacity: 0;
-      }
+      font-family: 'Source Sans Pro', sans-serif;
     }
   </style>
 </head>
 
 <body>
-
-  <header>
-    <div class="logo">
-      <img src="{{ asset('AdminLTE/dist/img/icon.png') }}" alt="Logo Reciclaje">
-      Centro De Acopio
+  <!-- Header fijo -->
+  <header style="background: #124905; color: #fff; padding: 10px 30px;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <img src="{{ asset('AdminLTE/dist/img/icon.png') }}" style="height: 40px;" alt="Logo">
+        <strong style="margin-left: 10px;">Centro de Acopio</strong>
+      </div>
+      <nav>
+        <a href="{{ route('login') }}" style="color: white; margin-right: 20px;">Ingresar</a>
+        @auth
+          @if(checkRol('acopi.admin'))
+            <a href="{{ route('acopi.admin.welcome') }}" style="color: white;">Panel Admin</a>
+          @endif
+        @endauth
+      </nav>
     </div>
-    <nav>
-      @auth
-      @if(checkRol('acopi.admin'))
-      
-        <a href="{{ route('acopi.admin.welcome') }}"
-          class="nav-link @if(Route::is('acopi.admin.*')) active @endif">
-          Administrador
-        </a>
-      
-      @endif
-      @endauth
-      <a href="{{ route('login')}}">Login</a>
-      <a href="#">Caracteristicas</a>
-      <a href="#">Como Funciona </a>
-      <a href="#" class="boton-contacto">Ventajas →</a>
-    </nav>
   </header>
 
-  <section class="contenido">
-    <div class="contenido-texto">
-      <h1>Bienvenido a Acopi</h1>
-      <p>Un espacio dedicado a transformar materiales aprovechables en recursos valiosos para un futuro sostenible.</p>
-      <a href="{{ route('login') }}">Ingresar</a>
-      <b>Toca la imagen →</b>
-    </div>
-    <div class="contenedor-imagen" id="contenedorImagen">
-      <img src="{{ asset('AdminLTE/dist/img/centro.jpg') }}" alt="Centro de Acopio">
-    </div>
-  </section>
+  <!-- Contenido dinámico -->
+  <main class="container mt-4">
+    @yield('content')
+  </main>
 
-  <script>
-    const contenedor = document.getElementById('contenedorImagen');
-
-    contenedor.addEventListener('mouseenter', () => {
-      for (let i = 0; i < 10; i++) {
-        crearHoja();
-      }
-    });
-
-    function crearHoja() {
-      const hoja = document.createElement('div');
-      hoja.classList.add('hoja');
-      hoja.style.left = Math.random() * window.innerWidth + "px";
-
-      // Animación personalizada para cada hoja
-      const desplazamientoX = Math.random() * 200 - 100; // Oscila entre -100px y +100px
-      const rotacion = Math.random() * 720 - 360; // Rota entre -360 y +360 grados
-      hoja.style.animation = `caer 5s linear forwards`;
-      hoja.style.setProperty('--desplazamiento-x', desplazamientoX + 'px');
-      hoja.style.setProperty('--rotacion', rotacion + 'deg');
-
-      document.body.appendChild(hoja);
-
-      setTimeout(() => {
-        hoja.remove();
-      }, 5000);
-    }
-  </script>
-
-
+  <!-- Scripts -->
+  <script src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
+  <script src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
 </body>
 
 </html>

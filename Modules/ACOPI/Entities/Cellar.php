@@ -1,17 +1,10 @@
 <?php 
-namespace Modules\Acopi\Entities;
+namespace Modules\ACOPI\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Cellar extends Model
 {
-    protected $fillable = ['name', 'ubicacion'];
-    
-    protected $table = 'cellars';// o los atributos que tú definiste
-
-    public function materials()
-    {
-        return $this->hasMany(Material::class);
-    }
-    
+    protected $fillable = ['name', 'location'];
 }
+

@@ -17,7 +17,7 @@ class CreateCellarsTable extends Migration
             $table->id(); // Primary key
 
             $table->string('name');             // Name of the cellar
-            $table->string('location')->nullable(); // Optional location
+            
 
             $table->timestamps(); // created_at and updated_at
         });

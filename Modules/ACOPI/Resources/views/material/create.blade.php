@@ -23,10 +23,15 @@
     @csrf
     <div class="container text-center">
         <div class="row">
-            <div class="col">
+           <div class="col-md-6"> 
                 <div class="form-group">
-                    <label for="name">Nombre del Material</label>
-                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                    <label for="name">Material</label>
+                    <select name="name" id="name" class="form-control custom-select" required>
+                        <option value="">Seleccione un material</option>
+                        <option value="Carton" {{ old('name') == 'Carton' ? 'selected' : '' }}>Carton</option>
+                        <option value="vidrio" {{ old('name') == 'vidrio' ? 'selected' : '' }}>Vidrio</option>
+                        <option value="cargadores" {{ old('name') == 'cargadores' ? 'selected' : '' }}>Cargadores</option>
+                    </select>
                     @error('name') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
                 <div class="form-group">
@@ -36,14 +41,17 @@
                 </div>
                 <div class="form-group">
                     <label for="classification_id">Clasificación</label>
-                    <select name="classification_id" id="classification_id" class="form-control select2" required>
-                        <option value="">Seleccione una clasificación</option>
-                        <option value="1" {{ old('classification_id') == 1 ? 'selected' : '' }}>Peligroso</option>
-                        <option value="2" {{ old('classification_id') == 2 ? 'selected' : '' }}>Orgánico</option>
-                        <option value="3" {{ old('classification_id') == 3 ? 'selected' : '' }}>Ordinario</option>
+                    <select name="classification_id" id="classification_id" class="form-control custom-select" required>
+                        <option value="">Seleccione un tipo</option>
+                        @foreach($classifications as $classification)
+                            <option value="{{ $classification->id }}" {{ old('classification_id') == $classification->id ? 'selected' : '' }}>
+                                {{ $classification->name }}
+                            </option>
+                        @endforeach
                     </select>
                     @error('classification_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
+
                 <div class="form-group">
                     <label for="weight">Peso:</label>
                     <input type="text" name="weight" class="form-control" placeholder="Ingrese el peso en kg" value="{{ old('weight') }}" required>
@@ -63,14 +71,23 @@
                 </div>
                 <div class="form-group">
                     <label for="cellar_id">Bodega</label>
-                    <select name="cellar_id" id="cellar_id" class="form-control select2" required>
+                    <select name="cellar_id" id="cellar_id" class="form-control custom-select" required>
                         <option value="">Seleccione una bodega</option>
-                        <option value="1" {{ old('cellar_id') == 1 ? 'selected' : '' }}>Bodega 1</option>
-                        <option value="2" {{ old('cellar_id') == 2 ? 'selected' : '' }}>Bodega 2</option>
-                        <option value="3" {{ old('cellar_id') == 3 ? 'selected' : '' }}>Bodega 3</option>
+                        @foreach($cellars as $cellar)
+                            <option value="{{ $cellar->id }}" {{ old('cellar_id') == $cellar->id ? 'selected' : '' }}>
+                                {{ $cellar->name }}
+                            </option>
+                        @endforeach
                     </select>
                     @error('cellar_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
+
+                <div class="form-group">
+                    <label for="charge">Encargado</label>
+                    <input type="text" name="charge" class="form-control" value="{{ old('charge') }}" required>
+                    @error('charge') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+
                 <br><br>
                 <div class="form-group">
                     <button type="submit" class="btn btn-success">Guardar Material</button>
@@ -79,21 +96,6 @@
         </div>
     </div>
 </form>
-
-<!-- Select2 CSS y JS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('.select2').select2({
-            placeholder: "Seleccione una opción",
-            allowClear: true,
-            width: '100%'
-        });
-    });
-</script>
 
 <style>
     form {
@@ -115,6 +117,8 @@
     label {
         font-weight: bold;
         color: #2f4f2f;
+        margin-bottom: 5px;
+        display: block;
     }
 
     .form-control {
@@ -124,12 +128,40 @@
         border-radius: 6px;
         background-color: #fff;
         transition: border-color 0.3s;
+        font-size: 14px;
+        line-height: 1.4;
     }
 
     .form-control:focus {
         border-color: #5cb85c;
         outline: none;
         box-shadow: 0 0 5px rgba(92, 184, 92, 0.3);
+    }
+
+    /* Estilos específicos para los selects */
+    .custom-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px;
+        padding-right: 40px;
+        cursor: pointer;
+        height: auto;
+        min-height: 42px;
+    }
+
+    .custom-select:focus {
+        border-color: #5cb85c;
+        outline: none;
+        box-shadow: 0 0 5px rgba(92, 184, 92, 0.3);
+    }
+
+    /* Hover effect para los selects */
+    .custom-select:hover {
+        border-color: #999;
     }
 
     .btn-success {
@@ -150,6 +182,33 @@
 
     .text-danger {
         font-size: 0.875em;
+    }
+
+    /* Mejorar la apariencia en dispositivos móviles */
+    @media (max-width: 768px) {
+        .custom-select {
+            font-size: 16px; /* Evita zoom en iOS */
+        }
+    }
+
+    /* Estilos para alertas */
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .alert-success {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #d6e9c6;
+    }
+
+    .alert-danger {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
     }
 </style>
 

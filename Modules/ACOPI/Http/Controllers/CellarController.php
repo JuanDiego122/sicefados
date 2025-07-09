@@ -1,79 +1,54 @@
 <?php
-
 namespace Modules\ACOPI\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\ACOPI\Entities\Cellar;
 
 class CellarController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index()
-    {
-        return view('acopi::index');
+    public function index() {                     
+
+        $cellars = Cellar::all();
+        return view('acopi::.cellar.index', compact('cellars'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('acopi::create');
+    public function create() {
+        return view('acopi::.cellar.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request) {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Cellar::create($request->all());
+        return redirect()->route('acopi.admin.cellar.index')->with('success', 'Bodega creada exitosamente.');
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('acopi::show');
+    public function edit($id) {
+        $cellar = Cellar::findOrFail($id);
+        return view('acopi::cellar.edit', compact('cellar'));
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('acopi::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
     public function update(Request $request, $id)
-    {
-        //
-    }
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+    ]);
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    $cellar = Cellar::findOrFail($id);
+    $cellar->update(['name' => $request->name]);
+
+    return redirect()->route('acopi.admin.cellar.index')->with('success', 'Bodega actualizada correctamente');
+}
+
+public function destroy($id)
+{
+    $cellar = Cellar::findOrFail($id);
+    $cellar->delete();
+
+    return redirect()->route('acopi.admin.cellar.index')->with('success', 'Bodega eliminada correctamente');
+}
 }
