@@ -44,7 +44,7 @@
                     <td>{{ $material->cellar->name ?? 'Sin celda' }}</td>
                     <td>{{ $material->charge}}</td>
                     <td>
-                        <a href="{{ route('acopi.admin.material.create') }}" class="btn btn-sm btn-success">Nuevo</a>
+                        
                         <a href="{{ route('acopi.admin.material.edit', $material->id) }}" class="btn btn-sm btn-warning">Editar</a>
                         <form action="{{ route('acopi.admin.material.destroy', $material->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este material?');">
                             @csrf
